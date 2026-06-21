@@ -6,6 +6,9 @@ import (
 
 func cleanInput(input string) []string {
 
+	if input == "" {
+		return []string{}
+	}
 	input = strings.TrimSpace(input)
 	input = strings.ToLower(input)
 
