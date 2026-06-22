@@ -24,12 +24,15 @@ func main() {
 				continue
 			}
 			cleanInput := cleanInput(input)
-			err := commands[cleanInput[0]].callback()
+			cmd, ok := commands[cleanInput[0]]
+			if !ok {
+				fmt.Print("Your command was: " + cleanInput[0] + "\n")
+				continue
+			}
+			err := cmd.callback()
 			if err != nil {
 				fmt.Printf("Error executing command: %v\n", err)
 			}
-			//fmt.Print("Your command was: " + cleanInput[0] + "\n")
-
 		}
 	}
 

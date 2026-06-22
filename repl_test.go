@@ -38,3 +38,23 @@ func TestCleanInput(t *testing.T) {
 		}
 	}
 }
+
+func TestGetCommands(t *testing.T) {
+	commands := getCommands()
+	if len(commands) != 2 {
+		t.Errorf("getCommands() returned %d commands, expected 2", len(commands))
+	}
+	if _, ok := commands["exit"]; !ok {
+		t.Error("getCommands() did not return 'exit' command")
+	}
+	if _, ok := commands["help"]; !ok {
+		t.Error("getCommands() did not return 'help' command")
+	}
+}
+
+func TestCommandHelp(t *testing.T) {
+	err := commandHelp()
+	if err != nil {
+		t.Errorf("commandHelp() returned an error: %v", err)
+	}
+}
