@@ -11,6 +11,7 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	commands := getCommands()
+	cfg := &Config{}
 
 	for {
 		//	scanner.Scan()
@@ -29,7 +30,7 @@ func main() {
 				fmt.Print("Your command was: " + cleanInput[0] + "\n")
 				continue
 			}
-			err := cmd.callback()
+			err := cmd.callback(cfg)
 			if err != nil {
 				fmt.Printf("Error executing command: %v\n", err)
 			}

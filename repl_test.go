@@ -41,8 +41,8 @@ func TestCleanInput(t *testing.T) {
 
 func TestGetCommands(t *testing.T) {
 	commands := getCommands()
-	if len(commands) != 2 {
-		t.Errorf("getCommands() returned %d commands, expected 2", len(commands))
+	if len(commands) != 4 {
+		t.Errorf("getCommands() returned %d commands, expected 4", len(commands))
 	}
 	if _, ok := commands["exit"]; !ok {
 		t.Error("getCommands() did not return 'exit' command")
@@ -50,11 +50,31 @@ func TestGetCommands(t *testing.T) {
 	if _, ok := commands["help"]; !ok {
 		t.Error("getCommands() did not return 'help' command")
 	}
+	if _, ok := commands["map"]; !ok {
+		t.Error("getCommands() did not return 'map' command")
+	}
+	if _, ok := commands["mapb"]; !ok {
+		t.Error("getCommands() did not return 'mapb' command")
+	}
 }
 
 func TestCommandHelp(t *testing.T) {
-	err := commandHelp()
+	err := commandHelp(&Config{})
 	if err != nil {
 		t.Errorf("commandHelp() returned an error: %v", err)
+	}
+}
+
+func TestCommandMap(t *testing.T) {
+	err := commandMap(&Config{})
+	if err != nil {
+		t.Errorf("commandMap() returned an error: %v", err)
+	}
+}
+
+func TestCommandMapb(t *testing.T) {
+	err := commandMap(&Config{})
+	if err != nil {
+		t.Errorf("commandMapback() returned an error: %v", err)
 	}
 }
