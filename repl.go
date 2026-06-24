@@ -45,25 +45,6 @@ func getCommands() map[string]cliCommand {
 	}
 }
 
-type cliCommand struct {
-	name        string
-	description string
-	callback    func(*Config) error
-}
-
-type locationResponse struct {
-	Next     string `json:"next"`
-	Previous string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-	} `json:"results"`
-}
-
-type Config struct {
-	Next     string
-	Previous string
-}
-
 func commandExit(cfg *Config) error {
 	fmt.Printf("Closing the Pokedex... Goodbye!\n")
 	os.Exit(0)
@@ -76,7 +57,31 @@ func commandHelp(cfg *Config) error {
 }
 
 func commandMap(cfg *Config) error {
-	data, err := http.Get("https://pokeapi.co/api/v2/location-area/")
+	url := "https://pokeapi.co/api/v2/location-area/"
+
+	if cfg.Next != "" {
+		url = cfg.Next
+	}
+	if val, exists := cfg.Cache.Get(url); exists {
+		// Use cached data
+		locations := locationResponse{}
+		err := json.Unmarshal(val, &locations)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal cached map data: %v", err)
+		}
+
+		// Update next and previous in config
+		cfg.Next = locations.Next
+		cfg.Previous = locations.Previous
+
+		// Print the location
+		for _, location := range locations.Results {
+			fmt.Println(location.Name)
+
+		}
+		return nil
+	}
+	data, err := http.Get(url)
 	if err != nil {
 		return fmt.Errorf("failed to fetch map data: %v", err)
 	}
@@ -93,16 +98,13 @@ func commandMap(cfg *Config) error {
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal map data: %v", err)
 	}
-
 	//update next and previous in config
 	cfg.Next = locations.Next
 	cfg.Previous = locations.Previous
-
 	//print the location
 	for _, location := range locations.Results {
 		fmt.Println(location.Name)
 	}
-
 	return nil
 }
 

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"pokedex/internal"
 	"testing"
+	"time"
 )
 
 func TestCleanInput(t *testing.T) {
@@ -66,14 +68,20 @@ func TestCommandHelp(t *testing.T) {
 }
 
 func TestCommandMap(t *testing.T) {
-	err := commandMap(&Config{})
+	cfg := &Config{
+		Cache: internal.NewCache(5 * time.Second),
+	}
+	err := commandMap(cfg)
 	if err != nil {
 		t.Errorf("commandMap() returned an error: %v", err)
 	}
 }
 
 func TestCommandMapb(t *testing.T) {
-	err := commandMap(&Config{})
+	cfg := &Config{
+		Cache: internal.NewCache(5 * time.Second),
+	}
+	err := commandMap(cfg)
 	if err != nil {
 		t.Errorf("commandMapback() returned an error: %v", err)
 	}
