@@ -42,6 +42,11 @@ func getCommands() map[string]cliCommand {
 			description: "List previous page of the Pokedex",
 			callback:    commandMapb,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Explore pokemon in location",
+			callback:    commandExplore,
+		},
 	}
 }
 
@@ -113,6 +118,25 @@ func commandMapb(cfg *Config) error {
 		fmt.Println("you're on the first page")
 		return nil
 	}
+	if val, exists := cfg.Cache.Get(cfg.Previous); exists {
+		// Use cached data
+		locations := locationResponse{}
+		err := json.Unmarshal(val, &locations)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal cached map data: %v", err)
+		}
+
+		// Update next and previous in config
+		cfg.Next = locations.Next
+		cfg.Previous = locations.Previous
+
+		// Print the location
+		for _, location := range locations.Results {
+			fmt.Println(location.Name)
+
+		}
+		return nil
+	}
 	data, err := http.Get(cfg.Previous)
 	if err != nil {
 		return fmt.Errorf("failed to fetch map data: %v", err)
@@ -140,5 +164,44 @@ func commandMapb(cfg *Config) error {
 		fmt.Println(location.Name)
 	}
 
+	return nil
+}
+
+func commandExplore(cfg *Config) error {
+	url := "https://pokeapi.co/api/v2/location-area/"
+	if cfg.ExploreLocation == "" {
+		fmt.Println("No location selected. Please provide a location to explore.")
+		return nil
+	}
+	if val, exists := cfg.Cache.Get(url + cfg.ExploreLocation); exists {
+		// Use cached data
+		pokemon := pokemonResponse{}
+		err := json.Unmarshal(val, &pokemon)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal cached pokemon data: %v", err)
+		}
+	} else {
+		data, err := http.Get(url + cfg.ExploreLocation)
+		if err != nil {
+			return fmt.Errorf("failed to find pokemon data: %v", err)
+		}
+		defer data.Body.Close()
+		if data.StatusCode != http.StatusOK {
+			return fmt.Errorf("failed to find pokemon data: received status code %d", data.StatusCode)
+		}
+		dat, err := io.ReadAll(data.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read pokemon data: %v", err)
+		}
+		pokemon := pokemonResponse{}
+		err = json.Unmarshal(dat, &pokemon)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal pokemon data: %v", err)
+		}
+		fmt.Printf("Exploring %s... \n"+"Found Pokemon: \n", cfg.ExploreLocation)
+		for _, encounter := range pokemon.PokemonEncounters {
+			fmt.Println(encounter.Pokemon.Name)
+		}
+	}
 	return nil
 }

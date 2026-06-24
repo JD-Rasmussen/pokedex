@@ -43,8 +43,8 @@ func TestCleanInput(t *testing.T) {
 
 func TestGetCommands(t *testing.T) {
 	commands := getCommands()
-	if len(commands) != 4 {
-		t.Errorf("getCommands() returned %d commands, expected 4", len(commands))
+	if len(commands) != 5 {
+		t.Errorf("getCommands() returned %d commands, expected 5", len(commands))
 	}
 	if _, ok := commands["exit"]; !ok {
 		t.Error("getCommands() did not return 'exit' command")

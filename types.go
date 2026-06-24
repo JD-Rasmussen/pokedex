@@ -19,7 +19,16 @@ type locationResponse struct {
 }
 
 type Config struct {
-	Next     string
-	Previous string
-	Cache    *internal.Cache
+	Next            string
+	Previous        string
+	Cache           *internal.Cache
+	ExploreLocation string
+}
+
+type pokemonResponse struct {
+	PokemonEncounters []struct {
+		Pokemon struct {
+			Name string `json:"name"`
+		} `json:"pokemon"`
+	} `json:"pokemon_encounters"`
 }

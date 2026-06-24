@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"pokedex/internal"
+	"time"
 )
 
 func main() {
@@ -11,7 +13,9 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	commands := getCommands()
-	cfg := &Config{}
+	cfg := &Config{
+		Cache: internal.NewCache(5 * time.Second),
+	}
 
 	for {
 		//	scanner.Scan()
@@ -26,6 +30,9 @@ func main() {
 			}
 			cleanInput := cleanInput(input)
 			cmd, ok := commands[cleanInput[0]]
+			if len(cleanInput) > 1 {
+				cfg.ExploreLocation = cleanInput[1]
+			}
 			if !ok {
 				fmt.Print("Your command was: " + cleanInput[0] + "\n")
 				continue
