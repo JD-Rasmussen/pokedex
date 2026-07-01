@@ -14,7 +14,8 @@ func main() {
 
 	commands := getCommands()
 	cfg := &Config{
-		Cache: internal.NewCache(5 * time.Second),
+		Cache:   internal.NewCache(5 * time.Second),
+		Pokedex: make(map[string]pokemonData),
 	}
 
 	for {
@@ -31,7 +32,7 @@ func main() {
 			cleanInput := cleanInput(input)
 			cmd, ok := commands[cleanInput[0]]
 			if len(cleanInput) > 1 {
-				cfg.ExploreLocation = cleanInput[1]
+				cfg.SecondCommand = cleanInput[1]
 			}
 			if !ok {
 				fmt.Print("Your command was: " + cleanInput[0] + "\n")
